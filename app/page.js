@@ -25,7 +25,7 @@ export default function Home() {
 
         // Load market data (wa_market_data.csv)
         const marketRes = await fetch(
-          'https://raw.githubusercontent.com/seattle-housing-ai/seattle-housing-ai/main/wa_market_data.csv'
+          'https://raw.githubusercontent.com/galahad0406/seattle-housing-ai/seattle-housing-ai/main/wa_market_data.csv'
         );
         const csvText = await marketRes.text();
 
