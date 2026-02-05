@@ -18,7 +18,7 @@ export default function Home() {
       try {
         // Load sentiment data (market_cache.json)
         const sentimentRes = await fetch(
-          'https://raw.githubusercontent.com/seattle-housing-ai/seattle-housing-ai/main/market_cache.json'
+          'https://raw.githubusercontent.com/galahad0406/seattle-housing-ai/seattle-housing-ai/main/market_cache.json'
         );
         const sentiment = await sentimentRes.json();
         setSentimentData(sentiment);
