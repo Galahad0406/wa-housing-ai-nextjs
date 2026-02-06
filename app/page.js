@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 
 // 1. 데이터 및 계산 로직 (수정 불필요)
-const COUNTY_MAP: { [key: string]: string } = {
+const COUNTY_MAP = {
   '98275': 'Snohomish', '98012': 'Snohomish', '98208': 'Snohomish',
   '98052': 'King', '98103': 'King', '98004': 'King', '98033': 'King',
   '98402': 'Pierce', '98391': 'Pierce', '98682': 'Clark',
