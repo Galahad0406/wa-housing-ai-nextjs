@@ -1,52 +1,40 @@
-// app/api/zipcode/route.ts
+import { NextResponse } from "next/server"
+import propertyService from "@/lib/propertyService"
 
-import { NextResponse } from 'next/server'
-import redfinScraper from '../../../lib/redfinScraper'
-import schoolData from '../../../lib/schoolData'
-import investmentGrader from '../../../lib/investmentGrader'
+export const runtime = "nodejs"
+export const dynamic = "force-dynamic"
 
-/**
- * ✅ VERCEL FIX
- */
-export const runtime = 'nodejs'
-export const dynamic = 'force-dynamic'
-
-export async function GET(request: Request) {
+export async function GET(req: Request) {
   try {
-    const { searchParams } = new URL(request.url)
-    const zipcode = searchParams.get('zipcode')
+    const { searchParams } = new URL(req.url)
+    const zipcode = searchParams.get("zipcode")
 
-    if (!zipcode || !/^\d{5}$/.test(zipcode)) {
+    if (!zipcode) {
       return NextResponse.json(
-        { error: 'Valid 5-digit zipcode is required' },
+        { error: "Zipcode required" },
         { status: 400 }
       )
     }
 
-    const marketData = await redfinScraper.getZipcodeData(zipcode)
-    const schools = await schoolData.getSchoolGrade(zipcode, null, null)
+    const zipData = await propertyService.getZipData(zipcode)
+    const census = await propertyService.getCensusData(zipcode)
 
-    const investment = investmentGrader.calculateGrade(
-      {
-        price: marketData.medianPrice,
-        sqft: Math.round(
-          marketData.medianPrice / marketData.avgPricePerSqft
-        ),
-      },
-      marketData,
-      schools
+    const grade = propertyService.calculateInvestmentScore(
+      Number(census.medianIncome)
     )
 
     return NextResponse.json({
       zipcode,
-      marketData,
-      schools,
-      investment
+      city: zipData.places[0]["place name"],
+      state: zipData.places[0]["state abbreviation"],
+      population: census.population,
+      medianIncome: census.medianIncome,
+      investmentGrade: grade
     })
-  } catch (error: any) {
-    console.error('Zipcode API error:', error)
+
+  } catch (err: any) {
     return NextResponse.json(
-      { error: 'Internal server error', details: error?.message },
+      { error: err.message },
       { status: 500 }
     )
   }
