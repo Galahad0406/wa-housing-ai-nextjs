@@ -1,23 +1,26 @@
 'use client'
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import {
   Box,
   Button,
   MenuItem,
+  Select,
   TextField,
-  Typography,
+  Typography
 } from '@mui/material'
 
-export default function PropertySearch() {
+interface PropertySearchProps {
+  onResults: (data: any, type: string) => void
+}
+
+export default function PropertySearch({ onResults }: PropertySearchProps) {
   const [address, setAddress] = useState('')
-  const [propertyType, setPropertyType] = useState<string>('house')
+  const [propertyType, setPropertyType] = useState<string>('property')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const handleSearch = async () => {
-    if (!address) return
-
     setLoading(true)
     setError(null)
 
@@ -31,25 +34,19 @@ export default function PropertySearch() {
       }
 
       const data = await res.json()
-      console.log(data)
+
+      // ✅ 부모로 결과 전달
+      onResults(data, 'property')
+
     } catch (err: any) {
-      setError(err.message)
+      setError(err.message || 'Something went wrong')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <Box
-      sx={{
-        maxWidth: 600,
-        mx: 'auto',
-        mt: 6,
-        p: 3,
-        borderRadius: 2,
-        boxShadow: 3,
-      }}
-    >
+    <Box sx={{ maxWidth: 600, mx: 'auto', mt: 4 }}>
       <Typography variant="h5" gutterBottom>
         Property Investment Analyzer
       </Typography>
@@ -59,32 +56,30 @@ export default function PropertySearch() {
         label="Property Address"
         value={address}
         onChange={(e) => setAddress(e.target.value)}
-        sx={{ mb: 2 }}
+        margin="normal"
       />
 
-      <TextField
-        select
+      <Select
         fullWidth
-        label="Property Type"
         value={propertyType}
         onChange={(e) => setPropertyType(e.target.value)}
-        sx={{ mb: 2 }}
       >
-        <MenuItem value="house">Single Family House</MenuItem>
-        <MenuItem value="townhome">Townhome / Condo</MenuItem>
-      </TextField>
+        <MenuItem value="property">Single Property</MenuItem>
+        <MenuItem value="zipcode">Zipcode Analysis</MenuItem>
+      </Select>
 
       <Button
         variant="contained"
         fullWidth
-        disabled={loading}
+        sx={{ mt: 2 }}
         onClick={handleSearch}
+        disabled={loading}
       >
-        {loading ? 'Analyzing...' : 'Analyze Property'}
+        {loading ? 'Analyzing...' : 'Analyze'}
       </Button>
 
       {error && (
-        <Typography color="error" mt={2}>
+        <Typography color="error" sx={{ mt: 2 }}>
           {error}
         </Typography>
       )}
