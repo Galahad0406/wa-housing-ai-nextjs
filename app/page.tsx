@@ -10,9 +10,7 @@ export default function Home() {
   return (
     <div>
       <h1>Real Estate Forecast AI</h1>
-
       <PropertySearch onResults={setResults} />
-
       {results && <ResultsDisplay data={results} />}
     </div>
   )
