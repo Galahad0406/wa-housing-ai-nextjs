@@ -1,13 +1,21 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  // 빌드 시 타입스크립트 에러 때문에 멈추는 것을 방지
-  typescript: {
-    ignoreBuildErrors: true,
+  swcMinify: true,
+  images: {
+    domains: ['ssl.cdn-redfin.com', 'photos.zillowstatic.com'],
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  }
-};
+  async headers() {
+    return [
+      {
+        source: '/api/:path*',
+        headers: [
+          { key: 'Access-Control-Allow-Origin', value: '*' },
+          { key: 'Access-Control-Allow-Methods', value: 'GET,POST,OPTIONS' },
+        ],
+      },
+    ];
+  },
+}
 
-module.exports = nextConfig;
+module.exports = nextConfig
