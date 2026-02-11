@@ -21,7 +21,7 @@ export default function PropertySearch({ onResults }: Props) {
   return (
     <div>
       <input
-        placeholder="Address"
+        placeholder="Property Address"
         value={address}
         onChange={(e) => setAddress(e.target.value)}
       />
