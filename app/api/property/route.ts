@@ -15,19 +15,12 @@ export async function GET(req: Request) {
     if (!address || !zipcode)
       return NextResponse.json({ error: "Missing params" }, { status: 400 })
 
-    const property = await rentcastService.getPropertyValue(address)
-    const rent = await rentcastService.getRentEstimate(address)
+    const property = await rentcastService.getProperty(address)
+    const rent = await rentcastService.getRent(address)
     const census = await propertyService.getCensusData(zipcode)
 
-    const growth = propertyService.predictGrowth(
-      property.price,
-      0.05
-    )
-
-    const roi = investmentCalculator.calculateROI(
-      property.price,
-      rent.rent
-    )
+    const growth = propertyService.predictGrowth(property.price, 0.05)
+    const roi = investmentCalculator.calculate(property.price, rent.rent)
 
     return NextResponse.json({
       property,
@@ -38,9 +31,6 @@ export async function GET(req: Request) {
     })
 
   } catch (err: any) {
-    return NextResponse.json(
-      { error: err.message },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: err.message }, { status: 500 })
   }
 }
