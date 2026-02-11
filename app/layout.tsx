@@ -1,21 +1,18 @@
-// app/layout.js
-import { Inter } from 'next/font/google';
-import './globals.css';
-
-const inter = Inter({ subsets: ['latin'] });
-
 export const metadata = {
-  title: 'Enhanced Real Estate AI Analytics - Washington State',
-  description: 'Advanced real estate analysis with school ratings, investment grades, and accurate market data',
-  keywords: 'real estate, Washington, property analysis, investment, school ratings, Redfin, Zillow',
-};
+  title: "Real Estate Forecast AI",
+  description: "AI Powered Investment Analyzer"
+}
 
-export default function RootLayout({ children }) {
+export default function RootLayout({
+  children
+}: {
+  children: React.ReactNode
+}) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body style={{ fontFamily: "Arial", padding: 20 }}>
         {children}
       </body>
     </html>
-  );
+  )
 }
