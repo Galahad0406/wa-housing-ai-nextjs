@@ -1,4 +1,4 @@
-🏘️ Pro Real Estate Analyzer - RapidAPI Edition
+# 🏘️ Pro Real Estate Analyzer - RapidAPI Edition
 
 Professional real estate investment analysis platform powered by RapidAPI with intelligent address search and dual analysis modes.
 
