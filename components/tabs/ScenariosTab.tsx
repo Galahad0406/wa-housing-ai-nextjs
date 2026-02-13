@@ -1,9 +1,9 @@
 'use client'
 
-import { AnalysisResult } from '@/types'
+import { PropertyAnalysisResult } from '@/types'
 
 interface Props {
-  result: AnalysisResult
+  result: PropertyAnalysisResult
 }
 
 export default function ScenariosTab({ result }: Props) {
