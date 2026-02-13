@@ -228,8 +228,6 @@ All these APIs use the **same RapidAPI key**:
 ## 💰 API Costs
 
 ### RapidAPI
-- **Free Tier**: 500-1000 requests/month per API
-- **Basic Plan**: ~$10/month for more requests
 - **One key** works for all three APIs!
 
 ### Census API
