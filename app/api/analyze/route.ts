@@ -9,30 +9,22 @@ export const maxDuration = 60
 export async function POST(req: Request) {
   try {
     const body = await req.json()
-    const { address, zipcode } = body
+    const { address } = body
 
-    if (!address || !zipcode) {
+    if (!address || !address.trim()) {
       return NextResponse.json(
-        { error: 'Address and zipcode are required' },
+        { error: 'Property address is required' },
         { status: 400 }
       )
     }
 
-    if (!/^\d{5}$/.test(zipcode)) {
-      return NextResponse.json(
-        { error: 'Invalid zipcode format. Please enter 5 digits.' },
-        { status: 400 }
-      )
-    }
-
-    const result = await analysisService.analyzeProperty(address, zipcode)
+    const result = await analysisService.analyzeProperty(address.trim())
 
     return NextResponse.json(result)
-
   } catch (error: any) {
-    console.error('API Error:', error)
+    console.error('Analysis API error:', error)
     return NextResponse.json(
-      { error: error.message || 'Analysis failed' },
+      { error: error.message || 'Property analysis failed' },
       { status: 500 }
     )
   }
