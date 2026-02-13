@@ -3,7 +3,7 @@ import './globals.css'
 
 export const metadata: Metadata = {
   title: 'Pro Real Estate Analyzer - Investment Analysis Platform',
-  description: 'Professional-grade real estate investment analysis with comprehensive financial metrics, market insights, and predictive modeling',
+  description: 'Professional real estate investment analysis with address search and market insights',
 }
 
 export default function RootLayout({
