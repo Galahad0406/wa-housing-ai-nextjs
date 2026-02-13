@@ -37,64 +37,28 @@ class ApiService {
   }
 
   // Get Property Data - RapidAPI Only
-async getPropertyData(address: string): Promise<PropertyData | null> {
-  // Try Redfin first
-  const redfin = await this.getPropertyFromRedfin(address)
-  if (redfin) return redfin
+  async getPropertyData(address: string): Promise<PropertyData | null> {
+    // Try Redfin first
+    const redfin = await this.getPropertyFromRedfin(address)
+    if (redfin) return redfin
 
-  // Try Zillow as backup
-  const zillow = await this.getPropertyFromZillow(address)
-  if (zillow) return zillow
+    // Try Zillow as backup
+    const zillow = await this.getPropertyFromZillow(address)
+    if (zillow) return zillow
 
-  return null
-}
-
-  private async getPropertyFromRentCast(address: string): Promise<PropertyData | null> {
-    if (!this.rentcastKey) return null
-
-    try {
-      const response = await axios.get('https://api.rentcast.io/v1/properties', {
-        params: { address },
-        headers: {
-          'X-Api-Key': this.rentcastKey,
-          'Accept': 'application/json'
-        },
-        timeout: 10000
-      })
-
-      const data = response.data?.[0]
-      if (!data) return null
-
-      return {
-        address: data.formattedAddress || address,
-        city: data.city || '',
-        state: data.state || '',
-        zipcode: data.zipCode || '',
-        price: data.price || data.assessedValue || 0,
-        bedrooms: data.bedrooms || 0,
-        bathrooms: data.bathrooms || 0,
-        squareFeet: data.squareFootage || 0,
-        lotSize: data.lotSize || 0,
-        yearBuilt: data.yearBuilt || 0,
-        propertyType: data.propertyType || 'Single Family',
-        lastSoldDate: data.lastSaleDate,
-        lastSoldPrice: data.lastSalePrice,
-        taxAssessedValue: data.assessedValue || 0,
-        annualTaxes: data.taxAssessment || 0,
-        hoa: 0
-      }
-    } catch (error) {
-      console.error('RentCast property error:', error)
-      return null
-    }
+    return null
   }
 
-  private async getPropertyFromRapidAPI(address: string): Promise<PropertyData | null> {
+  private async getPropertyFromRedfin(address: string): Promise<PropertyData | null> {
     if (!this.rapidApiKey) return null
 
     try {
-      const response = await axios.get('https://redfin-com-data.p.rapidapi.com/properties/detail', {
-        params: { address },
+      // First search for the property
+      const searchResponse = await axios.get('https://redfin-com-data.p.rapidapi.com/properties/search', {
+        params: { 
+          location: address,
+          limit: 1
+        },
         headers: {
           'X-RapidAPI-Key': this.rapidApiKey,
           'X-RapidAPI-Host': 'redfin-com-data.p.rapidapi.com'
@@ -102,41 +66,85 @@ async getPropertyData(address: string): Promise<PropertyData | null> {
         timeout: 10000
       })
 
-      const data = response.data?.data
-      if (!data) return null
+      const property = searchResponse.data?.data?.[0]
+      if (!property) return null
 
       return {
-        address: data.address || address,
-        city: data.city || '',
-        state: data.state || '',
-        zipcode: data.zip || '',
-        price: data.price || 0,
-        bedrooms: data.beds || 0,
-        bathrooms: data.baths || 0,
-        squareFeet: data.sqFt || 0,
-        lotSize: data.lotSize || 0,
-        yearBuilt: data.yearBuilt || 0,
-        propertyType: data.propertyType || 'Single Family',
-        taxAssessedValue: data.taxAssessedValue || 0,
-        annualTaxes: data.taxes || 0,
-        redfin_estimate: data.estimate
+        address: property.address || address,
+        city: property.city || '',
+        state: property.state || '',
+        zipcode: property.zip || '',
+        price: property.price || 0,
+        bedrooms: property.beds || 0,
+        bathrooms: property.baths || 0,
+        squareFeet: property.sqFt || 0,
+        lotSize: property.lotSize || 0,
+        yearBuilt: property.yearBuilt || 0,
+        propertyType: property.propertyType || 'Single Family',
+        lastSoldDate: property.lastSoldDate,
+        lastSoldPrice: property.lastSoldPrice,
+        taxAssessedValue: property.taxAssessedValue || 0,
+        annualTaxes: property.taxes || 0,
+        hoa: property.hoa || 0,
+        redfin_estimate: property.estimate
       }
     } catch (error) {
-      console.error('RapidAPI property error:', error)
+      console.error('Redfin API error:', error)
       return null
     }
   }
 
-  // Get Rental Data - RentCast
-  async getRentalData(address: string, sqft: number): Promise<RentalData | null> {
-    if (!this.rentcastKey) return null
+  private async getPropertyFromZillow(address: string): Promise<PropertyData | null> {
+    if (!this.rapidApiKey) return null
 
     try {
-      const response = await axios.get('https://api.rentcast.io/v1/avm/rent/long-term', {
+      const response = await axios.get('https://zillow-com1.p.rapidapi.com/property', {
         params: { address },
         headers: {
-          'X-Api-Key': this.rentcastKey,
-          'Accept': 'application/json'
+          'X-RapidAPI-Key': this.rapidApiKey,
+          'X-RapidAPI-Host': 'zillow-com1.p.rapidapi.com'
+        },
+        timeout: 10000
+      })
+
+      const data = response.data
+      if (!data) return null
+
+      return {
+        address: data.address?.streetAddress || address,
+        city: data.address?.city || '',
+        state: data.address?.state || '',
+        zipcode: data.address?.zipcode || '',
+        price: data.price || 0,
+        bedrooms: data.bedrooms || 0,
+        bathrooms: data.bathrooms || 0,
+        squareFeet: data.livingArea || 0,
+        lotSize: data.lotSize || 0,
+        yearBuilt: data.yearBuilt || 0,
+        propertyType: data.homeType || 'Single Family',
+        lastSoldDate: data.dateSold,
+        lastSoldPrice: data.lastSoldPrice,
+        taxAssessedValue: data.taxAssessedValue || 0,
+        annualTaxes: data.propertyTaxRate || 0,
+        hoa: data.hoaFee || 0,
+        zestimate: data.zestimate
+      }
+    } catch (error) {
+      console.error('Zillow API error:', error)
+      return null
+    }
+  }
+
+  // Get Rental Data - RapidAPI Realty Mole
+  async getRentalData(address: string, sqft: number): Promise<RentalData | null> {
+    if (!this.rapidApiKey) return null
+
+    try {
+      const response = await axios.get('https://realty-mole-property-api.p.rapidapi.com/rentalPrice', {
+        params: { address },
+        headers: {
+          'X-RapidAPI-Key': this.rapidApiKey,
+          'X-RapidAPI-Host': 'realty-mole-property-api.p.rapidapi.com'
         },
         timeout: 10000
       })
@@ -154,28 +162,27 @@ async getPropertyData(address: string): Promise<PropertyData | null> {
         marketGrowthRate: 4
       }
     } catch (error) {
-      console.error('RentCast rental error:', error)
+      console.error('Realty Mole rental error:', error)
       return null
     }
   }
 
   // Get Market Data for Zipcode
   async getMarketData(zipcode: string): Promise<MarketData | null> {
-    const [census, rentcast, rapid] = await Promise.all([
+    const [census, rapid] = await Promise.all([
       this.getCensusData(zipcode),
-      this.getRentCastMarketData(zipcode),
       this.getRapidAPIMarketData(zipcode)
     ])
 
     // Merge all data sources
     return {
       zipcode,
-      medianPrice: rapid?.medianPrice || rentcast?.medianPrice || 350000,
+      medianPrice: rapid?.medianPrice || 350000,
       pricePerSqft: rapid?.pricePerSqft || 250,
       daysOnMarket: rapid?.daysOnMarket || 35,
       monthsSupply: 3.5,
       yearOverYearAppreciation: rapid?.appreciation || 4.5,
-      averageRent: rentcast?.averageRent || 2200,
+      averageRent: rapid?.averageRent || 2200,
       vacancyRate: 4.5,
       population: census?.population || 0,
       medianIncome: census?.medianIncome || 0,
@@ -215,30 +222,6 @@ async getPropertyData(address: string): Promise<PropertyData | null> {
     }
   }
 
-  private async getRentCastMarketData(zipcode: string): Promise<any> {
-    if (!this.rentcastKey) return null
-
-    try {
-      const response = await axios.get('https://api.rentcast.io/v1/avm/rent/summary', {
-        params: { zipCode: zipcode },
-        headers: {
-          'X-Api-Key': this.rentcastKey,
-          'Accept': 'application/json'
-        },
-        timeout: 10000
-      })
-
-      const data = response.data
-      return {
-        averageRent: data.averageRent || 0,
-        medianPrice: data.medianPrice || 0
-      }
-    } catch (error) {
-      console.error('RentCast market error:', error)
-      return null
-    }
-  }
-
   private async getRapidAPIMarketData(zipcode: string): Promise<any> {
     if (!this.rapidApiKey) return null
 
@@ -260,7 +243,8 @@ async getPropertyData(address: string): Promise<PropertyData | null> {
         pricePerSqft: data.pricePerSqFt || 0,
         daysOnMarket: data.medianDaysOnMarket || 0,
         appreciation: data.yoyAppreciation || 0,
-        totalListings: data.totalListings || 0
+        totalListings: data.totalListings || 0,
+        averageRent: data.averageRent || 0
       }
     } catch (error) {
       console.error('RapidAPI market error:', error)
