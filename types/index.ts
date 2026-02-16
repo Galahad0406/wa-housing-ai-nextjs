@@ -167,3 +167,18 @@ export interface MarketAnalysisResult {
 }
 
 export type AnalysisResult = PropertyAnalysisResult | MarketAnalysisResult
+
+// ---------- Type Guards (Fix Vercel build error) ----------
+
+export function isPropertyAnalysis(
+  result: AnalysisResult
+): result is PropertyAnalysisResult {
+  return result.type === 'property'
+}
+
+export function isMarketAnalysis(
+  result: AnalysisResult
+): result is MarketAnalysisResult {
+  return result.type === 'market'
+}
+
