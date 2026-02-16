@@ -13,6 +13,8 @@ export interface PropertyData {
   city: string
   state: string
   zipcode: string
+  latitude?: number
+  longitude?: number
   price: number
   bedrooms: number
   bathrooms: number
