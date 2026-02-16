@@ -8,6 +8,21 @@ export interface AddressSuggestion {
   fullAddress: string
 }
 
+export interface GeocodeResult {
+  formattedAddress: string
+  latitude: number
+  longitude: number
+  streetNumber?: string
+  street?: string
+  city: string
+  county?: string
+  state: string
+  stateCode: string
+  zipcode: string
+  country: string
+  placeId: string
+}
+
 export interface PropertyData {
   address: string
   city: string
@@ -27,6 +42,8 @@ export interface PropertyData {
   hoa?: number
   zestimate?: number
   redfin_estimate?: number
+  latitude?: number
+  longitude?: number
 }
 
 export interface RentalData {
@@ -167,3 +184,12 @@ export interface MarketAnalysisResult {
 }
 
 export type AnalysisResult = PropertyAnalysisResult | MarketAnalysisResult
+
+// Type guard functions
+export function isPropertyAnalysis(result: AnalysisResult): result is PropertyAnalysisResult {
+  return result.type === 'property'
+}
+
+export function isMarketAnalysis(result: AnalysisResult): result is MarketAnalysisResult {
+  return result.type === 'market'
+}
