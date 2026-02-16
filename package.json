@@ -1,6 +1,6 @@
 {
-  "name": "pro-realestate-analyzer-rapidapi",
-  "version": "2.1.0",
+  "name": "pro-realestate-analyzer-v2",
+  "version": "2.2.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -9,18 +9,18 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "next": "14.2.3",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "recharts": "^2.10.3",
-    "axios": "^1.6.5"
+    "axios": "^1.6.7",
+    "next": "15.1.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "recharts": "^2.10.3"
   },
   "devDependencies": {
-    "typescript": "^5.3.3",
-    "@types/react": "^18.2.48",
-    "@types/react-dom": "^18.2.18",
-    "@types/node": "^20.10.6",
-    "eslint": "^8.56.0",
-    "eslint-config-next": "14.2.3"
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "15.1.4",
+    "typescript": "^5"
   }
 }
