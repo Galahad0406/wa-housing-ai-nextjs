@@ -182,7 +182,6 @@ export function isMarketAnalysis(
   return result.type === 'market'
 }
 
-// ---- FIXED GeocodeResult ----
 export interface GeocodeResult {
   formattedAddress: string
 
@@ -193,7 +192,12 @@ export interface GeocodeResult {
   street?: string
   city?: string
   county?: string
+
   state?: string
+  stateCode?: string
+
   zipcode?: string
   country?: string
+
+  placeId?: string
 }
