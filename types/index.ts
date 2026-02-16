@@ -182,11 +182,18 @@ export function isMarketAnalysis(
   return result.type === 'market'
 }
 
-// ---------- Missing Type Fix ----------
-
+// ---- FIXED GeocodeResult ----
 export interface GeocodeResult {
-  lat: number
-  lng: number
-  formattedAddress?: string
-  placeId?: string
+  formattedAddress: string
+
+  latitude: number
+  longitude: number
+
+  streetNumber?: string
+  street?: string
+  city?: string
+  county?: string
+  state?: string
+  zipcode?: string
+  country?: string
 }
