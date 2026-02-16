@@ -1,14 +1,14 @@
 'use client'
 
 import { PropertyAnalysisResult } from '@/types'
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts'
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
 
 interface Props {
   result: PropertyAnalysisResult
 }
 
 export default function FinancialsTab({ result }: Props) {
-  const { analysis } = result
+  const analysis = result.analysis
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -28,12 +28,6 @@ export default function FinancialsTab({ result }: Props) {
     { name: 'Utilities', value: analysis.utilities, color: '#10b981' },
     { name: 'Vacancy', value: analysis.vacancy, color: '#14b8a6' }
   ].filter(item => item.value > 0)
-
-  const cashFlowData = [
-    { name: 'Annual Rent', value: analysis.annualRent, color: '#10b981' },
-    { name: 'Total Expenses', value: analysis.totalExpenses, color: '#ef4444' },
-    { name: 'Mortgage Payment', value: analysis.monthlyMortgage * 12, color: '#f59e0b' }
-  ]
 
   return (
     <div>
@@ -125,28 +119,30 @@ export default function FinancialsTab({ result }: Props) {
           </div>
         </div>
 
-        <div style={{ marginTop: '32px' }}>
-          <h4 style={{ marginBottom: '16px' }}>Expense Breakdown</h4>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={expenseBreakdown}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={({name, percent}) => `${name}: ${(percent * 100).toFixed(1)}%`}
-                outerRadius={100}
-                fill="#8884d8"
-                dataKey="value"
-              >
-                {expenseBreakdown.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip formatter={(value) => formatCurrency(Number(value))} />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
+        {expenseBreakdown.length > 0 && (
+          <div style={{ marginTop: '32px' }}>
+            <h4 style={{ marginBottom: '16px' }}>Expense Breakdown</h4>
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={expenseBreakdown}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({name, percent}) => `${name}: ${(percent * 100).toFixed(1)}%`}
+                  outerRadius={100}
+                  fill="#8884d8"
+                  dataKey="value"
+                >
+                  {expenseBreakdown.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip formatter={(value) => formatCurrency(Number(value))} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        )}
       </div>
 
       {/* Cash Flow & Returns */}
@@ -183,7 +179,7 @@ export default function FinancialsTab({ result }: Props) {
           <div className="metric-card">
             <div className="metric-label">Cap Rate</div>
             <div className={`metric-value ${analysis.capRate > 6 ? 'positive' : 'warning'}`}>
-              {analysis.capRate}%
+              {analysis.capRate.toFixed(2)}%
             </div>
             <div style={{ fontSize: '0.875rem', marginTop: '8px', color: '#6b7280' }}>
               {analysis.capRate > 8 ? 'Excellent' : analysis.capRate > 6 ? 'Good' : analysis.capRate > 4 ? 'Fair' : 'Poor'}
@@ -192,7 +188,7 @@ export default function FinancialsTab({ result }: Props) {
           <div className="metric-card">
             <div className="metric-label">Cash-on-Cash Return</div>
             <div className={`metric-value ${analysis.cashOnCashReturn > 8 ? 'positive' : 'warning'}`}>
-              {analysis.cashOnCashReturn}%
+              {analysis.cashOnCashReturn.toFixed(2)}%
             </div>
             <div style={{ fontSize: '0.875rem', marginTop: '8px', color: '#6b7280' }}>
               {analysis.cashOnCashReturn > 12 ? 'Excellent' : analysis.cashOnCashReturn > 8 ? 'Good' : analysis.cashOnCashReturn > 5 ? 'Fair' : 'Poor'}
@@ -200,7 +196,7 @@ export default function FinancialsTab({ result }: Props) {
           </div>
           <div className="metric-card">
             <div className="metric-label">GRM (Gross Rent Multiplier)</div>
-            <div className="metric-value">{analysis.grm}</div>
+            <div className="metric-value">{analysis.grm.toFixed(2)}</div>
             <div style={{ fontSize: '0.875rem', marginTop: '8px', color: '#6b7280' }}>
               {analysis.grm < 12 ? 'Good' : analysis.grm < 15 ? 'Fair' : 'High'}
             </div>
@@ -217,13 +213,13 @@ export default function FinancialsTab({ result }: Props) {
           <div className="metric-card">
             <div className="metric-label">ROI (Return on Investment)</div>
             <div className={`metric-value ${analysis.roi > 10 ? 'positive' : 'warning'}`}>
-              {analysis.roi}%
+              {analysis.roi.toFixed(2)}%
             </div>
           </div>
           <div className="metric-card">
             <div className="metric-label">10-Year IRR</div>
             <div className={`metric-value ${analysis.irr > 12 ? 'positive' : 'warning'}`}>
-              {analysis.irr}%
+              {analysis.irr.toFixed(2)}%
             </div>
             <div style={{ fontSize: '0.875rem', marginTop: '8px', color: '#6b7280' }}>
               {analysis.irr > 15 ? 'Excellent' : analysis.irr > 10 ? 'Good' : analysis.irr > 7 ? 'Fair' : 'Poor'}
