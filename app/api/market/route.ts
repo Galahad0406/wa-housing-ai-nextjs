@@ -1,30 +1,23 @@
-// app/api/market/route.ts
-import { NextResponse } from 'next/server'
-import analysisService from '@/lib/analysisService'
+import { NextResponse } from "next/server"
+import { getZillowData } from "@/lib/zillow"
+import { getHUDData } from "@/lib/hud"
+import { getCensusData } from "@/lib/census"
+import { generateForecast } from "@/lib/forecast"
 
-export const runtime = 'nodejs'
-export const dynamic = 'force-dynamic'
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url)
+  const region = searchParams.get("region")
+  const zip = searchParams.get("zip")
 
-export async function POST(req: Request) {
-  try {
-    const body = await req.json()
-    const { zipcode } = body
-
-    if (!zipcode || !/^\d{5}$/.test(zipcode)) {
-      return NextResponse.json(
-        { error: 'Valid 5-digit zipcode is required' },
-        { status: 400 }
-      )
-    }
-
-    const result = await analysisService.analyzeMarket(zipcode)
-
-    return NextResponse.json(result)
-  } catch (error: any) {
-    console.error('Market analysis API error:', error)
-    return NextResponse.json(
-      { error: error.message || 'Market analysis failed' },
-      { status: 500 }
-    )
+  if (!region || !zip) {
+    return NextResponse.json({ error: "Missing params" }, { status: 400 })
   }
+
+  const zillow = getZillowData(region)
+  const hud = await getHUDData(zip)
+  const census = await getCensusData(zip)
+
+  const forecast = generateForecast(zillow, hud, census)
+
+  return NextResponse.json(forecast)
 }
