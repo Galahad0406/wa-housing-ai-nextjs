@@ -1,19 +1,18 @@
-import type { Metadata } from 'next'
-import './globals.css'
+import "./globals.css"
 
-export const metadata: Metadata = {
-  title: 'Pro Real Estate Analyzer - Investment Analysis Platform',
-  description: 'Professional real estate investment analysis with address search and market insights',
+export const metadata = {
+  title: "Real Estate AI Forecast",
+  description: "AI-powered housing market forecast"
 }
 
 export default function RootLayout({
-  children,
+  children
 }: {
   children: React.ReactNode
 }) {
   return (
     <html lang="en">
-      <body>
+      <body style={{ margin: 0, fontFamily: "Arial" }}>
         {children}
       </body>
     </html>
